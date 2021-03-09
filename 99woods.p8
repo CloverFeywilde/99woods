@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 29
+version 32
 __lua__
 --practice demo
 --by jaxxette
@@ -17,10 +17,10 @@ function _init()
  game_over=false
 
  //map generation variables
-	dimx=128
-	dimy=64
-	maxtunnels=50
-	maxlength=50
+	dimx=32
+	dimy=22
+	maxtunnels=10
+	maxlength=20
 	create_array(1)
 	create_map()
 end
@@ -44,9 +44,10 @@ function _draw()
   	draw_player()
   	if(btn(❎)) show_inventory()
   else
-   print(map_array[50][50])
-   print(cur_map[1][1])
+   //print(map_array[50][50])
+   //print(cur_map[50][50])
   	//draw_win_lose()
+  	print_array()
   end
 end
 
@@ -251,7 +252,7 @@ function create_map()
 					(cur_col==dimy-1 and rnd_dir[2]==1) then
 			break				
  	else
- 		cur_map[cur_row][cur_col]=2 //draw tunnel segment in array 
+ 		cur_map[cur_row][cur_col]=0 //draw tunnel segment in array 
 			cur_row+= rnd_dir[1] //increment next row and col by random direction
 			cur_col+= rnd_dir[2]
 			tun_len+=1 //increment tunnel length			
@@ -270,6 +271,22 @@ function create_map()
 	return cur_map
 end
 
+
+function print_array()
+ thisline='' //the line to print
+ yval=0 //y value of line height
+	for i=1,dimy,1 do	
+		if thisline != '' then
+			print(thisline,0,yval)
+			yval+=6
+			thisline=''
+		end
+		for j=1,dimx,1 do
+			//convert string and add to the line
+		 thisline=thisline..tostr(cur_map[i][j])
+		end
+	end
+end
 __gfx__
 00000000b5bbb55555ebbeb5dddddddddddddddddddddddddddd77dd333333332222222233333333eeeeeeee0000000000000000000000000000000000000000
 00000000bbb56000000eebbbdddddddddddddddddddddddddd666673333333332222222233333333eeeeeeee0000000000000000000000000000000000000000
