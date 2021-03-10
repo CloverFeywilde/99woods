@@ -19,8 +19,10 @@ function _init()
  //map generation variables
 	dimx=32
 	dimy=22
-	maxtunnels=10
-	maxlength=20
+	maxtunnels=40
+	mintunnels=10
+	maxlength=22
+	minlength=1
 	create_array(1)
 	create_map()
 end
@@ -223,51 +225,55 @@ end
 function create_map()
 	//set up variables
 	cur_map= map_array
-	cur_row= flr(rnd(dimx))+1
-	cur_col= flr(rnd(dimy))+1
-	cur_maxtun= maxtunnels
+	cur_row= flr(rnd(dimy-1))+1
+	cur_col= flr(rnd(dimx-1))+1
+	cur_maxtun= flr(rnd(maxtunnels))+mintunnels
 	cur_maxlen= maxlength
 	dir_list= {{-1,0},{1,0},{0,-1},{0,1}}
 	last_dir= {0,0} //init with bogus values to prevent errors
+
+	--[[draw tunnels until tunnel
+	variable hits zero]]--
+	while cur_maxtun>0 do	
 	
-	--[[keep picking a random 
-	direction until the axis is 
-	different]]--
-	repeat 
-		rnd_dir=dir_list[flr(rnd(4))+1]
-		until not 
-			((rnd_dir[1]==-last_dir[1] and rnd_dir[2]==-last_dir[2]) 
-			or (rnd_dir[1]==last_dir[1] and rnd_dir[2]==last_dir[2])) 
-	
- //randomly pick tunnel length
-	rnd_len= ceil(rnd(maxlength)+1)
-	tun_len=0 //counter for drawing tunnel
-	
-	//draw tunnel
-	while tun_len<rnd_len do 
-		//break loop if out of bounds
-		if (cur_row==1 and rnd_dir[1]==-1) or
-					(cur_col==1 and rnd_dir[2]==-1) or
-					(cur_row==dimx-1 and rnd_dir[1]==1) or
-					(cur_col==dimy-1 and rnd_dir[2]==1) then
-			break				
- 	else
- 		cur_map[cur_row][cur_col]=0 //draw tunnel segment in array 
-			cur_row+= rnd_dir[1] //increment next row and col by random direction
-			cur_col+= rnd_dir[2]
-			tun_len+=1 //increment tunnel length			
-		end		
-	
-		--[[check if tunnel broke 
-		before it could increment
-		if not, then set last 
-		direction & minus max tunnel]]--
-		if tun_len != 0 then
-			last_dir = rnd_dir
-			cur_maxtun -= 1		
-		end	
-	end	
-	
+		--[[keep picking a random 
+		direction until the axis is 
+		different]]--
+		repeat 
+			rnd_dir=dir_list[flr(rnd(4))+1]
+			until not 
+				((rnd_dir[1]==-last_dir[1] and rnd_dir[2]==-last_dir[2]) 
+				or (rnd_dir[1]==last_dir[1] and rnd_dir[2]==last_dir[2])) 
+		
+	 //randomly pick tunnel length
+		rnd_len= ceil(rnd(maxlength)+minlength)
+		tun_len=0 //counter for drawing tunnel
+		
+		//draw tunnel loop
+		while tun_len<rnd_len do 
+			//break loop if out of bounds
+			if (cur_row==1 and rnd_dir[1]==-1) or
+						(cur_col==1 and rnd_dir[2]==-1) or
+						(cur_row==dimy-1 and rnd_dir[1]==1) or
+						(cur_col==dimx-1 and rnd_dir[2]==1) then
+				break				
+	 	else
+	 		cur_map[cur_row][cur_col]=0 //draw tunnel segment in array 
+				cur_row+= rnd_dir[1] //increment next row and col by random direction
+				cur_col+= rnd_dir[2]
+				tun_len+=1 //increment tunnel length			
+			end		
+		
+			--[[check if tunnel broke 
+			before it could increment
+			if not, then set last 
+			direction]]--
+			if tun_len != 0 then
+				last_dir = rnd_dir		
+			end	
+		end
+		cur_maxtun -= 1 //subtract tunnel	
+	end
 	return cur_map
 end
 
